@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animal Guessing Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .start-screen, .game-screen, .results-screen {
+            display: none;
+        }
+
+        .start-screen.active, .game-screen.active, .results-screen.active {
+            display: block;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border-radius: 50px;
+            cursor: pointer;
+            display: block;
+            margin: 30px auto;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .timer {
+            background: #ff6b6b;
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .animal-card {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .animal-emoji {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .animal-name {
+            font-size: 2em;
+            color: #2d3436;
+            font-weight: bold;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.3em;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+
+        .instructions {
+            background: #74b9ff;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .game-btn {
+            flex: 1;
+            padding: 20px;
+            font-size: 1.3em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .correct-btn {
+            background: #55efc4;
+            color: #00b894;
+        }
+
+        .correct-btn:hover {
+            background: #00b894;
+            color: white;
+        }
+
+        .pass-btn {
+            background: #fab1a0;
+            color: #e17055;
+        }
+
+        .pass-btn:hover {
+            background: #e17055;
+            color: white;
+        }
+
+        .results-list {
+            margin: 30px 0;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            font-size: 1.2em;
+        }
+
+        .result-item.correct {
+            background: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .result-item.wrong {
+            background: #fadbd8;
+            color: #c0392b;
+        }
+
+        .result-emoji {
+            font-size: 2em;
+            margin-right: 15px;
+        }
+
+        .final-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+        }
+
+        .intro-text {
+            font-size: 1.2em;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 Animal Guessing Game 🐾</h1>
+
+        <!-- Start Screen -->
+        <div class="start-screen active">
+            <p class="intro-text">
+                Describe the animal to help others guess it! <br>
+                You have 60 seconds to get through as many animals as you can. <br>
+                Click ✓ if they guessed correctly or PASS to skip!
+            </p>
+            <button class="start-btn" onclick="startGame()">Start Game!</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen">
+            <div class="timer" id="timer">60</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="instructions">
+                Describe this animal without saying its name!
+            </div>
+            <div class="animal-card">
+                <div class="animal-emoji" id="animalEmoji">🐶</div>
+                <div class="animal-name" id="animalName">Dog</div>
+            </div>
+            <div class="button-group">
+                <button class="game-btn correct-btn" onclick="markCorrect()">✓ Correct!</button>
+                <button class="game-btn pass-btn" onclick="passAnimal()">Pass</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-screen">
+            <div class="final-score">
+                <div>Game Over!</div>
+                <div style="font-size: 2em; margin: 20px 0;">🎉</div>
+                <div>Final Score: <span id="finalScore">0</span></div>
+            </div>
+            <div class="results-list" id="resultsList"></div>
+            <button class="start-btn" onclick="resetGame()">Play Again!</button>
+        </div>
+    </div>
+
+    <script>
+        const animals = [
+            { name: 'Dog', emoji: '🐶' },
+            { name: 'Cat', emoji: '🐱' },
+            { name: 'Elephant', emoji: '🐘' },
+            { name: 'Lion', emoji: '🦁' },
+            { name: 'Tiger', emoji: '🐯' },
+            { name: 'Bear', emoji: '🐻' },
+            { name: 'Monkey', emoji: '🐵' },
+            { name: 'Giraffe', emoji: '🦒' },
+            { name: 'Zebra', emoji: '🦓' },
+            { name: 'Penguin', emoji: '🐧' },
+            { name: 'Dolphin', emoji: '🐬' },
+            { name: 'Owl', emoji: '🦉' },
+            { name: 'Butterfly', emoji: '🦋' },
+            { name: 'Bee', emoji: '🐝' },
+            { name: 'Frog', emoji: '🐸' },
+            { name: 'Rabbit', emoji: '🐰' },
+            { name: 'Fox', emoji: '🦊' },
+            { name: 'Koala', emoji: '🐨' },
+            { name: 'Panda', emoji: '🐼' },
+            { name: 'Pig', emoji: '🐷' },
+            { name: 'Cow', emoji: '🐮' },
+            { name: 'Horse', emoji: '🐴' },
+            { name: 'Chicken', emoji: '🐔' },
+            { name: 'Duck', emoji: '🦆' },
+            { name: 'Shark', emoji: '🦈' },
+            { name: 'Octopus', emoji: '🐙' },
+            { name: 'Crab', emoji: '🦀' },
+            { name: 'Snail', emoji: '🐌' },
+            { name: 'Turtle', emoji: '🐢' },
+            { name: 'Crocodile', emoji: '🐊' }
+        ];
+
+        let gameAnimals = [];
+        let currentAnimalIndex = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let timerInterval;
+        let results = [];
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startGame() {
+            // Reset game state
+            gameAnimals = shuffleArray(animals);
+            currentAnimalIndex = 0;
+            score = 0;
+            timeLeft = 60;
+            results = [];
+
+            // Update UI
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+            document.getElementById('score').textContent = score;
+            
+            // Show first animal
+            showCurrentAnimal();
+
+            // Start timer
+            startTimer();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeLeft;
+            
+            if (timeLeft <= 10) {
+                timerElement.style.background = '#ff4757';
+                timerElement.style.animation = 'pulse 0.5s infinite';
+            }
+        }
+
+        function showCurrentAnimal() {
+            if (currentAnimalIndex >= gameAnimals.length) {
+                endGame();
+                return;
+            }
+
+            const animal = gameAnimals[currentAnimalIndex];
+            document.getElementById('animalEmoji').textContent = animal.emoji;
+            document.getElementById('animalName').textContent = animal.name;
+        }
+
+        function markCorrect() {
+            const animal = gameAnimals[currentAnimalIndex];
+            score++;
+            results.push({ animal: animal, correct: true });
+            document.getElementById('score').textContent = score;
+            nextAnimal();
+        }
+
+        function passAnimal() {
+            const animal = gameAnimals[currentAnimalIndex];
+            results.push({ animal: animal, correct: false });
+            nextAnimal();
+        }
+
+        function nextAnimal() {
+            currentAnimalIndex++;
+            if (currentAnimalIndex >= gameAnimals.length) {
+                endGame();
+            } else {
+                showCurrentAnimal();
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.results-screen').classList.add('active');
+            
+            showResults();
+        }
+
+        function showResults() {
+            document.getElementById('finalScore').textContent = score;
+            
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `result-item ${result.correct ? 'correct' : 'wrong'}`;
+                div.innerHTML = `
+                    <span class="result-emoji">${result.animal.emoji}</span>
+                    <span>${result.animal.name} - ${result.correct ? 'Correct!' : 'Passed'}</span>
+                `;
+                resultsList.appendChild(div);
+            });
+        }
+
+        function resetGame() {
+            document.querySelector('.results-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.add('active');
+        }
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
