@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guessing Game for Kids</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .start-screen, .category-screen, .game-screen, .results-screen {
+            display: none;
+        }
+
+        .start-screen.active, .category-screen.active, .game-screen.active, .results-screen.active {
+            display: block;
+        }
+
+        .start-btn, .category-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            display: block;
+            margin: 15px auto;
+            transition: transform 0.2s;
+            font-family: inherit;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .start-btn:hover, .category-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .category-btn {
+            margin: 10px auto;
+            padding: 18px 30px;
+        }
+
+        .category-btn.animals {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .category-btn.colors {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .category-btn.activities {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .category-btn.emotions {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .timer {
+            background: #ff6b6b;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 10px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .item-card {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .item-emoji {
+            font-size: 3.5em;
+            margin-bottom: 10px;
+        }
+
+        .item-name {
+            font-size: 1.5em;
+            color: #2d3436;
+            font-weight: bold;
+        }
+
+        .color-display {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.1em;
+            color: #2d3436;
+            margin-bottom: 12px;
+        }
+
+        .instructions {
+            background: #74b9ff;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-size: 0.95em;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .game-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .correct-btn {
+            background: #55efc4;
+            color: #00b894;
+        }
+
+        .correct-btn:hover {
+            background: #00b894;
+            color: white;
+        }
+
+        .pass-btn {
+            background: #fab1a0;
+            color: #e17055;
+        }
+
+        .pass-btn:hover {
+            background: #e17055;
+            color: white;
+        }
+
+        .results-list {
+            margin: 20px 0;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        .result-item.correct {
+            background: #d5f5e3;
+            color: #27ae60;
+        }
+
+        .result-item.wrong {
+            background: #fadbd8;
+            color: #c0392b;
+        }
+
+        .result-emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .result-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            margin-right: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .final-score {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+        }
+
+        .intro-text {
+            font-size: 1em;
+            text-align: center;
+            color: #2d3436;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .back-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1em;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 15px auto 0;
+            display: block;
+            font-family: inherit;
+        }
+
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Guessing Game 🎮</h1>
+
+        <!-- Start Screen -->
+        <div class="start-screen active">
+            <p class="intro-text">
+                Describe what you see to help others guess it! <br>
+                You have 60 seconds to get through as many as you can. <br>
+                Click ✓ if they guessed correctly or PASS to skip!
+            </p>
+            <button class="start-btn" onclick="showCategories()">Choose a Category!</button>
+        </div>
+
+        <!-- Category Selection Screen -->
+        <div class="category-screen">
+            <p class="intro-text">Pick a category to play!</p>
+            <button class="category-btn animals" onclick="startGame('animals')">🐾 Animals</button>
+            <button class="category-btn colors" onclick="startGame('colors')">🎨 Colors</button>
+            <button class="category-btn activities" onclick="startGame('activities')">⚽ Activities</button>
+            <button class="category-btn emotions" onclick="startGame('emotions')">😊 Emotions</button>
+            <button class="back-btn" onclick="goToStart()">Back</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen">
+            <div class="timer" id="timer">60</div>
+            <div class="score-display">Score: <span id="score">0</span></div>
+            <div class="instructions" id="instructions">
+                Describe this without saying its name!
+            </div>
+            <div class="item-card" id="itemCard">
+                <div class="item-emoji" id="itemEmoji">🐶</div>
+                <div class="item-name" id="itemName">Dog</div>
+            </div>
+            <div class="button-group">
+                <button class="game-btn correct-btn" onclick="markCorrect()">✓ Correct!</button>
+                <button class="game-btn pass-btn" onclick="passItem()">Pass</button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="results-screen">
+            <div class="final-score">
+                <div>Game Over!</div>
+                <div style="font-size: 1.5em; margin: 15px 0;">🎉</div>
+                <div>Final Score: <span id="finalScore">0</span></div>
+            </div>
+            <div class="results-list" id="resultsList"></div>
+            <button class="start-btn" onclick="resetGame()">Play Again!</button>
+        </div>
+    </div>
+
+    <script>
+        const categories = {
+            animals: [
+                { name: 'Dog', emoji: '🐶' },
+                { name: 'Cat', emoji: '🐱' },
+                { name: 'Elephant', emoji: '🐘' },
+                { name: 'Lion', emoji: '🦁' },
+                { name: 'Tiger', emoji: '🐯' },
+                { name: 'Bear', emoji: '🐻' },
+                { name: 'Monkey', emoji: '🐵' },
+                { name: 'Giraffe', emoji: '🦒' },
+                { name: 'Zebra', emoji: '🦓' },
+                { name: 'Penguin', emoji: '🐧' },
+                { name: 'Dolphin', emoji: '🐬' },
+                { name: 'Owl', emoji: '🦉' },
+                { name: 'Butterfly', emoji: '🦋' },
+                { name: 'Bee', emoji: '🐝' },
+                { name: 'Frog', emoji: '🐸' },
+                { name: 'Rabbit', emoji: '🐰' },
+                { name: 'Fox', emoji: '🦊' },
+                { name: 'Koala', emoji: '🐨' },
+                { name: 'Panda', emoji: '🐼' },
+                { name: 'Pig', emoji: '🐷' },
+                { name: 'Cow', emoji: '🐮' },
+                { name: 'Horse', emoji: '🐴' },
+                { name: 'Chicken', emoji: '🐔' },
+                { name: 'Duck', emoji: '🦆' },
+                { name: 'Shark', emoji: '🦈' },
+                { name: 'Octopus', emoji: '🐙' },
+                { name: 'Crab', emoji: '🦀' },
+                { name: 'Snail', emoji: '🐌' },
+                { name: 'Turtle', emoji: '🐢' },
+                { name: 'Crocodile', emoji: '🐊' }
+            ],
+            colors: [
+                { name: 'Red', color: '#FF0000' },
+                { name: 'Blue', color: '#0000FF' },
+                { name: 'Yellow', color: '#FFFF00' },
+                { name: 'Green', color: '#00FF00' },
+                { name: 'Orange', color: '#FFA500' },
+                { name: 'Purple', color: '#800080' },
+                { name: 'Pink', color: '#FFC0CB' },
+                { name: 'Brown', color: '#8B4513' },
+                { name: 'Black', color: '#000000' },
+                { name: 'White', color: '#FFFFFF' },
+                { name: 'Gray', color: '#808080' },
+                { name: 'Turquoise', color: '#40E0D0' },
+                { name: 'Gold', color: '#FFD700' },
+                { name: 'Silver', color: '#C0C0C0' },
+                { name: 'Lime', color: '#00FF00' },
+                { name: 'Magenta', color: '#FF00FF' },
+                { name: 'Cyan', color: '#00FFFF' },
+                { name: 'Navy', color: '#000080' },
+                { name: 'Maroon', color: '#800000' },
+                { name: 'Coral', color: '#FF7F50' }
+            ],
+            activities: [
+                { name: 'Running', emoji: '🏃' },
+                { name: 'Swimming', emoji: '🏊' },
+                { name: 'Dancing', emoji: '💃' },
+                { name: 'Singing', emoji: '🎤' },
+                { name: 'Reading', emoji: '📖' },
+                { name: 'Drawing', emoji: '✏️' },
+                { name: 'Painting', emoji: '🎨' },
+                { name: 'Cooking', emoji: '🍳' },
+                { name: 'Jumping', emoji: '🤸' },
+                { name: 'Sleeping', emoji: '😴' },
+                { name: 'Eating', emoji: '🍽️' },
+                { name: 'Playing', emoji: '🎮' },
+                { name: 'Biking', emoji: '🚴' },
+                { name: 'Skateboarding', emoji: '🛹' },
+                { name: 'Flying a kite', emoji: '🪁' },
+                { name: 'Building', emoji: '🏗️' },
+                { name: 'Gardening', emoji: '🌱' },
+                { name: 'Climbing', emoji: '🧗' },
+                { name: 'Skating', emoji: '⛸️' },
+                { name: 'Fishing', emoji: '🎣' }
+            ],
+            emotions: [
+                { name: 'Happy', emoji: '😊' },
+                { name: 'Sad', emoji: '😢' },
+                { name: 'Angry', emoji: '😠' },
+                { name: 'Excited', emoji: '🤩' },
+                { name: 'Surprised', emoji: '😲' },
+                { name: 'Scared', emoji: '😨' },
+                { name: 'Silly', emoji: '🤪' },
+                { name: 'Sleepy', emoji: '😴' },
+                { name: 'Confused', emoji: '😕' },
+                { name: 'Proud', emoji: '😌' },
+                { name: 'Worried', emoji: '😟' },
+                { name: 'Calm', emoji: '😊' },
+                { name: 'Grumpy', emoji: '😤' },
+                { name: 'Shy', emoji: '😳' },
+                { name: 'Brave', emoji: '💪' },
+                { name: 'Loving', emoji: '🥰' },
+                { name: 'Tired', emoji: '😫' },
+                { name: 'Curious', emoji: '🤔' },
+                { name: 'Peaceful', emoji: '😌' },
+                { name: 'Frustrated', emoji: '😣' }
+            ]
+        };
+
+        let currentCategory = '';
+        let gameItems = [];
+        let currentItemIndex = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let timerInterval;
+        let results = [];
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function showCategories() {
+            document.querySelector('.start-screen').classList.remove('active');
+            document.querySelector('.category-screen').classList.add('active');
+        }
+
+        function goToStart() {
+            document.querySelector('.category-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.add('active');
+        }
+
+        function startGame(category) {
+            currentCategory = category;
+            
+            // Reset game state
+            gameItems = shuffleArray(categories[category]);
+            currentItemIndex = 0;
+            score = 0;
+            timeLeft = 60;
+            results = [];
+
+            // Update UI
+            document.querySelector('.category-screen').classList.remove('active');
+            document.querySelector('.game-screen').classList.add('active');
+            document.getElementById('score').textContent = score;
+            
+            // Update instructions based on category
+            const instructions = document.getElementById('instructions');
+            if (category === 'colors') {
+                instructions.textContent = 'Describe this color without saying its name!';
+            } else if (category === 'activities') {
+                instructions.textContent = 'Describe this activity without saying what it is!';
+            } else if (category === 'emotions') {
+                instructions.textContent = 'Describe this feeling without saying what it is!';
+            } else {
+                instructions.textContent = 'Describe this animal without saying its name!';
+            }
+            
+            // Show first item
+            showCurrentItem();
+
+            // Start timer
+            startTimer();
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = timeLeft;
+            
+            if (timeLeft <= 10) {
+                timerElement.style.background = '#ff4757';
+                timerElement.style.animation = 'pulse 0.5s infinite';
+            }
+        }
+
+        function showCurrentItem() {
+            if (currentItemIndex >= gameItems.length) {
+                endGame();
+                return;
+            }
+
+            const item = gameItems[currentItemIndex];
+            const itemCard = document.getElementById('itemCard');
+            
+            if (currentCategory === 'colors') {
+                // Show color display
+                itemCard.innerHTML = `
+                    <div class="color-display" style="background-color: ${item.color};"></div>
+                    <div class="item-name">${item.name}</div>
+                `;
+            } else {
+                // Show emoji display
+                itemCard.innerHTML = `
+                    <div class="item-emoji">${item.emoji}</div>
+                    <div class="item-name">${item.name}</div>
+                `;
+            }
+        }
+
+        function markCorrect() {
+            const item = gameItems[currentItemIndex];
+            score++;
+            results.push({ item: item, correct: true });
+            document.getElementById('score').textContent = score;
+            nextItem();
+        }
+
+        function passItem() {
+            const item = gameItems[currentItemIndex];
+            results.push({ item: item, correct: false });
+            nextItem();
+        }
+
+        function nextItem() {
+            currentItemIndex++;
+            if (currentItemIndex >= gameItems.length) {
+                endGame();
+            } else {
+                showCurrentItem();
+            }
+        }
+
+        function endGame() {
+            clearInterval(timerInterval);
+            document.querySelector('.game-screen').classList.remove('active');
+            document.querySelector('.results-screen').classList.add('active');
+            
+            showResults();
+        }
+
+        function showResults() {
+            document.getElementById('finalScore').textContent = score;
+            
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `result-item ${result.correct ? 'correct' : 'wrong'}`;
+                
+                if (currentCategory === 'colors') {
+                    div.innerHTML = `
+                        <div class="result-color" style="background-color: ${result.item.color};"></div>
+                        <span>${result.item.name} - ${result.correct ? 'Correct!' : 'Passed'}</span>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <span class="result-emoji">${result.item.emoji}</span>
+                        <span>${result.item.name} - ${result.correct ? 'Correct!' : 'Passed'}</span>
+                    `;
+                }
+                
+                resultsList.appendChild(div);
+            });
+        }
+
+        function resetGame() {
+            document.querySelector('.results-screen').classList.remove('active');
+            document.querySelector('.start-screen').classList.add('active');
+        }
+
+        // Add pulse animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
